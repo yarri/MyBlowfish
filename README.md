@@ -9,7 +9,7 @@ Basic usage
 -----------
 
     $password = "honeyBump";
-    MyBlowfish::IsHash($password); // false;
+    MyBlowfish::IsHash($password); // false
 
     $hash = MyBlowfish::GetHash($password);
     MyBlowfish::IsHash($hash); // true
@@ -26,7 +26,7 @@ Popular integration into a ATK14 project
 ----------------------------------------
 
 Consider a table 'users' which has among the others textual fields 'login' and 'password'.
-In the field 'password' we don't want to store passwords in the readable form. We just want to store Blowfish hashes here.
+In the field 'password' we don't want to store passwords in the readable form. We just want to store Blowfish hashes in there.
 This can be achieved in the model class User.
 
     <?php
