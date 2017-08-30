@@ -34,7 +34,7 @@ This can be achieved in the model class User.
     class User extends ApplicationModel {
 
       /**
-       * Upon a new user creation it provides transparent password hashing when it's needed
+       * During a new user creation it provides transparent password hashing when it's needed
        *
        *    $user = User::CreateNewRecord(array(
        *      "login" => "rambo",
@@ -68,7 +68,7 @@ This can be achieved in the model class User.
       static function Login($login,$password){
         $user = User::FindByLogin($login);
         if(!$user){ return; }
-        if(MyBlowfish::CheckPassword($password,$this->getPassword())){
+        if(MyBlowfish::CheckPassword($password,$user->getPassword())){
           return $user;
         }
       }
