@@ -22,4 +22,15 @@ class TcMyBlowfish extends TcBase {
 		$this->assertFalse(MyBlowfish::CheckPassword("BadTry",$hash));
 		$this->assertFalse(MyBlowfish::CheckPassword("BadTry",$hash2));
 	}
+
+	function test_IsHash(){
+		$this->assertFalse(MyBlowfish::IsHash("secret"));
+		$this->assertTrue(MyBlowfish::IsHash('$2a$12$MynqSpHoDzQmzFHA5ZcDsesX1pBw9RQzqtJEFqpeZhpawmnC4MUK.'));
+	}
+
+	function test_EscapeNonAsciiChars(){
+		$this->assertEquals("OpenSezame123$%@/*",MyBlowfish::EscapeNonAsciiChars("OpenSezame123$%@/*"));
+		$this->assertEquals('h\xc5\x99eb\xc3\xad\xc4\x8dek',MyBlowfish::EscapeNonAsciiChars("hřebíček"));
+		$this->assertEquals('Black\x5cWhite',MyBlowfish::EscapeNonAsciiChars("Black\White"));
+	}
 }

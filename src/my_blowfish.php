@@ -71,7 +71,7 @@ class MyBlowfish{
 		$salt = (string)$options["salt"];
 
 		if($options["escape_non_ascii_chars"]){
-			$password = MyBlowfish::_EscapeNonAsciiChars($password);
+			$password = MyBlowfish::EscapeNonAsciiChars($password);
 		}
 
 		// the higher ROUNDS is, the more expensive hash calculation is
@@ -208,7 +208,7 @@ class MyBlowfish{
   }
 
 	// hřebíček -> h\xc5\x99eb\xc3\xad\xc4\x8dek
-	private static function _EscapeNonAsciiChars($password){
+	static function EscapeNonAsciiChars($password){
 		$chrs = array();
 		for($i=0;$i<strlen($password);$i++){
 			$chr = $password[$i];
