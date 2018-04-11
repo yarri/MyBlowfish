@@ -11,13 +11,14 @@ Basic usage
     $password = "honeyBump";
     MyBlowfish::IsHash($password); // false
 
-    $hash = MyBlowfish::GetHash($password);
+    $hash = MyBlowfish::Hash($password);
     MyBlowfish::IsHash($hash); // true
+    $hash2 = MyBlowfish::Hash($hash); // already hash, does nothing; $hash2 === $hash
     
     MyBlowfish::CheckPassword("honeyBumb",$hash); // true
     MyBlowfish::CheckPassword("badTry",$hash); // false
 
-    $hash2 = MyBlowfish::GetHash($password); // $hash2 != $hash
+    $hash2 = MyBlowfish::Hash($password); // $hash2 != $hash
 
     MyBlowfish::CheckPassword("honeyBumb",$hash2); // true
 
@@ -36,14 +37,14 @@ This can be achieved in the model class User.
       /**
        * During a new user creation it provides transparent password hashing when it's needed
        *
-       *    $user = User::CreateNewRecord(array(
+       *    $user = User::CreateNewRecord([
        *      "login" => "rambo",
        *      "password" => "secret123"
-       *    ));
+       *    ]);
        */
-      static function CreateNewRecord($values,$options = array()){
-        if(!MyBlowfish::IsHash($values["password"])){
-          $values["password"] = MyBlowfish::GetHash($values["password"]);
+      static function CreateNewRecord($values,$options = []){
+        if(isset($values["password"])){
+          $values["password"] = MyBlowfish::Hash($values["password"]);
         }
         return parent::CreateNewRecord($values,$options);
       }
@@ -51,11 +52,11 @@ This can be achieved in the model class User.
       /**
        * It provides transparent password hashing during setting new values
        *
-       *    $rambo->setValues(array("password" => "newModelArmy"));
+       *    $rambo->setValues(["password" => "newModelArmy"]);
        */
-      function setValues($values,$options = array()){
-        if(isset($values["password"]) && !MyBlowfish::IsHash($values["password"])){
-          $values["password"] = MyBlowfish::GetHash($values["password"]);
+      function setValues($values,$options = []){
+        if(isset($values["password"])){
+          $values["password"] = MyBlowfish::Hash($values["password"]);
         }
         return parent::setValues($values,$options);
       }
@@ -76,7 +77,7 @@ This can be achieved in the model class User.
 
 Let's test it in the ATK14 console:
 
-    php > $user = User::CreateNewRecord(array('login' => 'rambo', 'password' => 'secret123'));
+    php > $user = User::CreateNewRecord(['login' => 'rambo', 'password' => 'secret123']);
     php > echo $user->getPassword();
     $2a$12$w984Nf6g67ZZKqvXgQWqwuj4mOn9Ptmw.dMNs/A7G9Cj/mt/w5buy
     php > $user->setValue('password','newModelArmy');
@@ -91,7 +92,7 @@ Installation
 
 The best way how to install LinkFinder is to use the Composer:
 
-    composer require yarri/my-blowfish dev-master
+    composer require yarri/my-blowfish
 
 License
 -------
