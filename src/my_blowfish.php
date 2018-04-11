@@ -1,12 +1,12 @@
 <?php
 if(!defined("MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS")){
-	// existuji jiste problemy pri hashovaniu non-ascii hesel
+	// There are some issues with hashing non-ascii passwords
 	// http://www.php.net/security/crypt_blowfish.php
 	define("MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS",true);
 }
 
 if(!defined("MY_BLOWFISH_ROUNDS")){
-	// the higher this constant is the more time consumption a hash calculation is
+	// The higher this constant is the more time consumption a hash calculation is
 	// min .. 4
 	// max .. 31
 	// optimal .. 12
@@ -18,39 +18,41 @@ if(!defined("MY_BLOWFISH_ROUNDS")){
  * It uses blowfish hash algorithm.
  *  
  * <code>
- * $hash = MyBlowfish::GetHash("secret");
- * if(MyBlowfish::CheckPassword("secret",$hash)){
- *  // good password
- * }
+ *   $hash = MyBlowfish::GetHash("secret");
+ *   if(MyBlowfish::CheckPassword("secret",$hash)){
+ *     // good password
+ *   }
  * </code>
  *
  * Inspiration:
- *	http://stackoverflow.com/questions/4795385/how-do-you-use-bcrypt-for-hashing-passwords-in-php
+ *  http://stackoverflow.com/questions/4795385/how-do-you-use-bcrypt-for-hashing-passwords-in-php
  *
  * TODO:
- * 	Consider $2x$ and $2y$ hashes
+ *  Consider $2x$ and $2y$ hashes
  */
 class MyBlowfish{
 
 	/**
-	* Hashes a password
-	*
-	* <code>
-  * $hash = MyBlowfish::GetHash("secret");
-  * $hash = MyBlowfish::GetHash("secret","SomeSalt");
-  * $hash = MyBlowfish::GetHash("secret","$2a$08$GEw8HjtpaK0WfdILVMby7u");
-	* </code>
-	* 
-	* @static
-	*	@access public
-	*	@param string $password								plain v citelne podobe
-	* @param string $salt										volitelny salt
-	*																				salt musi zacinat frazi "$2a$DD$", kde DD jsou desitkove cislice
-	*																				delka saltu musi byt celkem 29
-	*																				doporucuju salt vynechavat -> bude automaticky a nahodne urcen
-	* @return string 												zahashovane heslo
-	*																				nebo null, pokud PHP Blowfish nepodporuje nebo je spatne salt
-	*/
+	 * Hashes a password
+	 *
+	 * <code>
+	 *  $hash = MyBlowfish::GetHash("secret");
+	 *  $hash = MyBlowfish::GetHash("secret","SomeSalt");
+	 *  $hash = MyBlowfish::GetHash("secret","$2a$08$GEw8HjtpaK0WfdILVMby7u");
+	 * </code>
+	 *
+	 * An exception is thrown when something went wrong.
+	 * 
+	 * @static
+	 * @access public
+	 * @param string $password                readable password
+	 * @param string $salt                    optional salt
+	 *                                        - salt must start with phrase "$2a$DD$" where DD are decimal nubers
+	 *                                        - salt must be 29 chars long
+	 *                                        - MyBlowfish tries to correct the given salt when the needs are not met, an exception can be thrown when the the final salt is not correct
+	 *                                        - it's recommended to omit the salt, it will be determined automatically :)
+	 * @return string                         hash
+	 */
 	static function GetHash($password,$salt = "",$options = array()){
 		if(is_array($salt)){
 			$options = $salt;
@@ -58,7 +60,7 @@ class MyBlowfish{
 		}
 
 		if(!defined("CRYPT_BLOWFISH") || CRYPT_BLOWFISH!=1) {
-      throw new Exception("Blowfish not supported in this installation. See http://php.net/crypt");
+      throw new Exception("MyBlowfish: Blowfish not supported in this installation. See http://php.net/crypt");
     }
 
 		$options += array(
@@ -74,7 +76,7 @@ class MyBlowfish{
 			$password = MyBlowfish::EscapeNonAsciiChars($password);
 		}
 
-		// the higher ROUNDS is, the more expensive hash calculation is
+		// The higher ROUNDS is, the more expensive hash calculation is
 		$__salt = sprintf('$2a$%02d$',$options["rounds"]);
 
 		if(strlen($salt)==0){
@@ -99,35 +101,35 @@ class MyBlowfish{
 			$salt = "$salt_prefix$salt_random";
 
 			if(strlen($salt)!=29){
-				return null;
+				throw new Exception(sprintf("MyBlowfish: salt must be 29 chars long (it is %s)",strlen($salt)));
 			}
 			if(!preg_match('/^\$2a\$[0-9]{2}\$/',$salt)){
-				return null;
+				throw new Exception(sprintf('MyBlowfish: salt must start with phrase $2a$DD$ where DD are defined numbers'));
 			}
 			$__salt = $salt;
 		}
 
 		$__hash = crypt($password,$__salt);
-		if(strlen($__hash)!=60){
-			return null;
+		if(!self::IsHash($__hash)){
+			throw new Exception("MyBlowfish: hashing failed");
 		}
 		return $__hash;
 	}
 
 	/**
-	* Overi, zda si odpovidaji citelne heslo a Blowfish hash.
-	*
-	* if(MyBlowfish::CheckPassword('kolovrat','$2a$08$GEw8HjtpaK0WfdILVMby7uvjpWSvu0aF/U6Qx6r.xg.qdDSFg9zBm')){
-	*  // spravne heslo....
-	*	}
-	*
-	* @static
-	* @access public
-	* @param string $password			citelne heslo
-	* @param string $hash					predpokladany hash hesla
-	* @return boolean 						true -> heslo a hash sobe odpovidaji
-	*															false -> heslo hashi neodpovida; toto neni spravne heslo 
-	*/
+	 * Checks whether the given readable password matches the given hash
+	 *
+	 *  if(MyBlowfish::CheckPassword('kolovrat','$2a$08$GEw8HjtpaK0WfdILVMby7uvjpWSvu0aF/U6Qx6r.xg.qdDSFg9zBm')){
+	 *    // correct password given
+	 *  }
+	 *
+	 * @static
+	 * @access public
+	 * @param string $password      readable password
+	 * @param string $hash          expected hash of the password
+	 * @return boolean              true -> correct password
+	 *                              false -> invalid password
+	 */
 	static function CheckPassword($password,$hash,$options = array()){
 		$password = (string)$password;
 		$hash = (string)$hash;
@@ -142,7 +144,7 @@ class MyBlowfish{
 
 		if(MyBlowfish::_CompareHashes($exp_h1,$hash)){ return true; }
 
-		// zkusime prepnout prepinac pro konvertovani znaku do ascii a overit hashe znovu!
+		// let's try to toggle the non-ascii chars conversion and compare password again
 		$options["escape_non_ascii_chars"] = !$options["escape_non_ascii_chars"];
 		$exp_h2 = MyBlowfish::GetHash($password,$hash,$options);
 
@@ -150,7 +152,7 @@ class MyBlowfish{
 	}
 
 	/**
-	 * Is the given value a valid BLOWFISH hash?
+	 * Is the given string a valid BLOWFISH hash?
 	 */
 	static function IsHash($value){
 		return strlen($value)==60 && preg_match('/^\$2a\$[0-9]{2}\$/',$value);
@@ -174,12 +176,12 @@ class MyBlowfish{
 			}
 		}
 
-		// weak randomness
+		// Beware, String4 provides weak randomness
 		return (string)String4::RandomString($length);
 	}
 
   private static function _EncodeBytes($input) {
-    // The following is code from the PHP Password Hashing Framework
+    // The following code is from the PHP Password Hashing Framework
     $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
     $output = '';
@@ -207,7 +209,11 @@ class MyBlowfish{
     return $output;
   }
 
-	// hřebíček -> h\xc5\x99eb\xc3\xad\xc4\x8dek
+	/**
+	 * Provides safely encoding non-ascii characters into series of ascii chars
+	 *
+	 *  $encoded = MyBlowfish::EscapeNonAsciiChars("hřebíček"); // h\xc5\x99eb\xc3\xad\xc4\x8dek
+	 */
 	static function EscapeNonAsciiChars($password){
 		$chrs = array();
 		for($i=0;$i<strlen($password);$i++){
@@ -228,10 +234,6 @@ class MyBlowfish{
 			!MyBlowfish::IsHash($h2)
 		){ return false; }
 
-		if(strcmp($h1,$h2)==0){
-			return true;
-		}
-
-		return false;
+		return strcmp($h1,$h2)===0;
 	}
 }
