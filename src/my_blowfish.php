@@ -33,7 +33,35 @@ if(!defined("MY_BLOWFISH_ROUNDS")){
 class MyBlowfish{
 
 	/**
-	 * Hashes a password
+	 * Hashes the given password. Doesn't do anything if an already hashed password is given.
+	 *
+	 * Returns null or empty string if null or empty string is given.
+	 *
+	 * <code>
+	 *    echo MyBlowfish::Hash("daisy"); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
+	 *    echo MyBlowfish::Hash("daisy"); // $2a$06$oU6VBb0Y7/h648HIgDiosukfS0y97pRJOrndqHPunsEZ/2Ykez3Rm
+	 *	
+	 *		echo MyBlowfish::Hash('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm'); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
+	 *
+	 * 		echo MyBlowfish::Hash(""); // ""
+	 * 		echo MyBlowfish::Hash(null); // null
+	 * </code>
+	 *
+	 */
+	static function Hash($password){
+		if(strlen($password)==0){
+			return $password;
+		}
+
+		if(self::IsHash($password)){
+			return $password;
+		}
+
+		return self::GetHash($password);
+	}
+
+	/**
+	 * Hashes the given password
 	 *
 	 * <code>
 	 *  $hash = MyBlowfish::GetHash("secret");

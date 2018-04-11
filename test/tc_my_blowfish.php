@@ -56,4 +56,18 @@ class TcMyBlowfish extends TcBase {
 		}
 		$this->assertTrue($exception_thrown);
 	}
+
+	function test_Hash(){
+		$hash = MyBlowfish::Hash('daisy');
+		$hash2 = MyBlowfish::Hash('daisy');
+
+		$this->assertTrue(MyBlowfish::IsHash($hash));
+		$this->assertTrue(MyBlowfish::IsHash($hash2));
+
+		$this->assertNotEquals($hash,$hash2);
+
+		$this->assertEquals('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm',MyBlowfish::Hash('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm'));
+		$this->assertEquals('',MyBlowfish::Hash(''));
+		$this->assertEquals(null,MyBlowfish::Hash(null));
+	}
 }
