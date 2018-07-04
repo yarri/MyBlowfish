@@ -166,7 +166,9 @@ class MyBlowfish{
 			"escape_non_ascii_chars" => MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS,
 		);
 
-		if(!MyBlowfish::IsHash($hash)){ return false; }
+		if(!MyBlowfish::IsHash($hash)){
+			throw new Exception("MyBlowfish: CheckPassword() expects a hash in the second parameter");
+		}
 
 		$exp_h1 = MyBlowfish::GetHash($password,$hash,$options);
 
