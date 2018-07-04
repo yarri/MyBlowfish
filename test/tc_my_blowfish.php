@@ -24,6 +24,13 @@ class TcMyBlowfish extends TcBase {
 
 		$this->assertFalse(MyBlowfish::CheckPassword($hash,$hash));
 
+		$hashed_hash = MyBlowfish::GetHash($hash);
+		$this->assertNotEquals($hash,$hashed_hash);
+		$this->assertTrue(MyBlowfish::IsHash($hashed_hash));
+		//
+		$this->assertTrue(MyBlowfish::CheckPassword($hash,$hashed_hash));
+		$this->assertFalse(MyBlowfish::CheckPassword($hashed_hash,$hash));
+
 		$exception_thrown = false;
 		try {
 			MyBlowfish::CheckPassword("BadTry","Not hash!");
