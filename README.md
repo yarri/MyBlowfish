@@ -22,6 +22,20 @@ Basic usage
 
     MyBlowfish::CheckPassword("honeyBumb",$hash2); // true
 
+Blowfish rounds
+---------------
+
+Complexity of calculation of a Blowfish hash can be affected by the number of Blowfish rounds. The higher value of Blowfish rounds is, the more time consumption the password cracking process can be. In MyBlowfish the default value is set to 12.
+
+Number of Blowfish rounds can be set by the constant MY_BLOWFISH_ROUNDS.
+
+    // min .. 4
+    // max .. 31
+    // optimal .. 10, 11, 12
+    // default .. 12
+    define("MY_BLOWFISH_ROUNDS",12);
+
+Beware that high values of Blowfish rounds may lead to unwanted long time of hash calculation.
 
 Popular integration into a ATK14 project
 ----------------------------------------
