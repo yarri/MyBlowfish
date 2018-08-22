@@ -101,14 +101,14 @@ class MyBlowfish{
 		$salt = (string)$options["salt"];
 
 		if($options["escape_non_ascii_chars"]){
-			$password = MyBlowfish::EscapeNonAsciiChars($password);
+			$password = static::EscapeNonAsciiChars($password);
 		}
 
 		// The higher ROUNDS is, the more expensive hash calculation is
 		$__salt = sprintf('$2a$%02d$',$options["rounds"]);
 
 		if(strlen($salt)==0){
-			$__salt .= MyBlowfish::RandomString(22);
+			$__salt .= static::RandomString(22);
 		}else{
 			$salt_prefix = $__salt;
 			$salt_random = "";
@@ -119,7 +119,7 @@ class MyBlowfish{
 				$salt_random = $salt;
 			}
 
-			if($salt_random==""){ $salt_random = MyBlowfish::RandomString(22); }
+			if($salt_random==""){ $salt_random = static::RandomString(22); }
 
 			while(strlen($salt_random)<22){
 				$salt_random .= $salt_random;
@@ -166,19 +166,19 @@ class MyBlowfish{
 			"escape_non_ascii_chars" => MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS,
 		);
 
-		if(!MyBlowfish::IsHash($hash)){
+		if(!static::IsHash($hash)){
 			throw new Exception("MyBlowfish: CheckPassword() expects a hash in the second parameter");
 		}
 
-		$exp_h1 = MyBlowfish::GetHash($password,$hash,$options);
+		$exp_h1 = static::GetHash($password,$hash,$options);
 
-		if(MyBlowfish::_CompareHashes($exp_h1,$hash)){ return true; }
+		if(static::_CompareHashes($exp_h1,$hash)){ return true; }
 
 		// let's try to toggle the non-ascii chars conversion and compare password again
 		$options["escape_non_ascii_chars"] = !$options["escape_non_ascii_chars"];
-		$exp_h2 = MyBlowfish::GetHash($password,$hash,$options);
+		$exp_h2 = static::GetHash($password,$hash,$options);
 
-		return MyBlowfish::_CompareHashes($exp_h2,$hash);
+		return static::_CompareHashes($exp_h2,$hash);
 	}
 
 	/**
@@ -200,7 +200,7 @@ class MyBlowfish{
 		}
 
 		if(isset($bytes)){
-			$out = MyBlowfish::_EncodeBytes($bytes);
+			$out = static::_EncodeBytes($bytes);
 			if(strlen($out)==$length){
 				return $out;
 			}
@@ -260,8 +260,8 @@ class MyBlowfish{
 
 	private static function _CompareHashes($h1,$h2){
 		if(
-			!MyBlowfish::IsHash($h1) ||
-			!MyBlowfish::IsHash($h2)
+			!static::IsHash($h1) ||
+			!static::IsHash($h2)
 		){ return false; }
 
 		return strcmp($h1,$h2)===0;
