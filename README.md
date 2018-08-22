@@ -13,14 +13,28 @@ Basic usage
 
     $hash = MyBlowfish::Hash($password);
     MyBlowfish::IsHash($hash); // true
-    $hash2 = MyBlowfish::Hash($hash); // already hash, does nothing; $hash2 === $hash
+
+    // A different salt is used automatically in another call of Hash().
+    // So the new hash from the same password differs from the old one.
+    $hash2 = MyBlowfish::Hash($password); // $hash2 !== $hash
+
+    // Hash() doesn't make hash from a hash!
+    $hash3 = MyBlowfish::Hash($hash); // $hash3 === $hash
     
-    MyBlowfish::CheckPassword("honeyBumb",$hash); // true
+    // There is also method GetHash() which makes hash in every case.
+    $hash4 = MyBlowfish::GetHash($hash); // $hash4 !== $hash
+
+    MyBlowfish::CheckPassword($password,$hash); // true
     MyBlowfish::CheckPassword("badTry",$hash); // false
+    MyBlowfish::CheckPassword($hash,$hash); // false
 
-    $hash2 = MyBlowfish::Hash($password); // $hash2 != $hash
+    MyBlowfish::CheckPassword($password,$hash2); // true
 
-    MyBlowfish::CheckPassword("honeyBumb",$hash2); // true
+    MyBlowfish::CheckPassword($password,$hash4); // false
+    MyBlowfish::CheckPassword($hash,$hash4); // true
+
+    // An exception is thrown when the second parameter in CheckPassword() is not a hash.
+    MyBlowfish::CheckPassword($password,$password); // throws an exception
 
 Blowfish rounds
 ---------------
