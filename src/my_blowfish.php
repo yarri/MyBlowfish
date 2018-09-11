@@ -215,25 +215,25 @@ class MyBlowfish{
     $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
     $output = '';
-    $i = 0;
+    $index = 0;
     do {
-      $c1 = ord($input[$i++]);
-      $output .= $itoa64[$c1 >> 2];
-      $c1 = ($c1 & 0x03) << 4;
-      if ($i >= 16) {
-        $output .= $itoa64[$c1];
+      $char1 = ord($input[$index++]);
+      $output .= $itoa64[$char1 >> 2];
+      $char1 = ($char1 & 0x03) << 4;
+      if ($index >= 16) {
+        $output .= $itoa64[$char1];
         break;
       }
 
-      $c2 = ord($input[$i++]);
-      $c1 |= $c2 >> 4;
-      $output .= $itoa64[$c1];
-      $c1 = ($c2 & 0x0f) << 2;
+      $char2 = ord($input[$index++]);
+      $char1 |= $char2 >> 4;
+      $output .= $itoa64[$char1];
+      $char1 = ($char2 & 0x0f) << 2;
 
-      $c2 = ord($input[$i++]);
-      $c1 |= $c2 >> 6;
-      $output .= $itoa64[$c1];
-      $output .= $itoa64[$c2 & 0x3f];
+      $char2 = ord($input[$index++]);
+      $char1 |= $char2 >> 6;
+      $output .= $itoa64[$char1];
+      $output .= $itoa64[$char2 & 0x3f];
     } while (1);
 
     return $output;
@@ -258,12 +258,12 @@ class MyBlowfish{
 	}
 
 
-	private static function _CompareHashes($h1,$h2){
+	private static function _CompareHashes($hash1,$hash2){
 		if(
-			!static::IsHash($h1) ||
-			!static::IsHash($h2)
+			!static::IsHash($hash1) ||
+			!static::IsHash($hash2)
 		){ return false; }
 
-		return strcmp($h1,$h2)===0;
+		return strcmp($hash1,$hash2)===0;
 	}
 }
