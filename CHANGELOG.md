@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Dropped out dependency on atk14/string4 package
+- MyBlowfish::RandomString() fixed & tuned & tested
+
 ## [1.1.1] 2018-07-04
 
 ### Added
