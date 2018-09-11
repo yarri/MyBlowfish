@@ -13,12 +13,13 @@ if(!defined("MY_BLOWFISH_ROUNDS")){
 	define("MY_BLOWFISH_ROUNDS",12);
 }
 
-if(!defined("MY_BLOWFISH_TYPE")){
-	// Possible types:
+if(!defined("MY_BLOWFISH_PREFIX")){
+	// The default Blowfish hash prefix
+	// Possible prefixes are:
 	// $2a$
 	// $2b$
 	// $2y$
-	define("MY_BLOWFISH_TYPE",'$2a$');
+	define("MY_BLOWFISH_PREFIX",'$2a$');
 }
 
 /**
@@ -75,7 +76,7 @@ class MyBlowfish{
 	 *  $hash = MyBlowfish::GetHash("secret");
 	 *  $hash = MyBlowfish::GetHash("secret","SomeSalt");
 	 *  $hash = MyBlowfish::GetHash("secret","$2a$08$GEw8HjtpaK0WfdILVMby7u");
-	 *  $hash = MyBlowfish::GetHash("secret",["type" => '$2y$']);
+	 *  $hash = MyBlowfish::GetHash("secret",["prefix" => '$2y$']);
 	 * </code>
 	 *
 	 * An exception is thrown when something went wrong.
@@ -101,18 +102,18 @@ class MyBlowfish{
     }
 
 		$options += array(
-			"type" => MY_BLOWFISH_TYPE,
+			"prefix" => MY_BLOWFISH_PREFIX,
 			"salt" => $salt,
 			"escape_non_ascii_chars" => MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS,
 			"rounds" => MY_BLOWFISH_ROUNDS,
 		);
 
-		$type = $options["type"];
+		$prefix = $options["prefix"];
 		$password = (string)$password;
 		$salt = (string)$options["salt"];
 
-		if(!in_array($type,array('$2a$','$2b$','$2y$'))){
-			throw new Exception(sprintf("MyBlowfish: invalid hash type: %s",$type));
+		if(!in_array($prefix,array('$2a$','$2b$','$2y$'))){
+			throw new Exception(sprintf("MyBlowfish: invalid hash prefix: %s",$prefix));
 		}
 
 		if($options["escape_non_ascii_chars"]){
@@ -120,7 +121,7 @@ class MyBlowfish{
 		}
 
 		// The higher ROUNDS is, the more expensive hash calculation is
-		$__salt = sprintf($type.'%02d$',$options["rounds"]);
+		$__salt = sprintf($prefix.'%02d$',$options["rounds"]);
 
 		if(strlen($salt)==0){
 			$__salt .= static::RandomString(22);
@@ -147,7 +148,7 @@ class MyBlowfish{
 				throw new Exception(sprintf("MyBlowfish: salt must be 29 chars long (it is %s)",strlen($salt)));
 			}
 			if(!preg_match('/^\$2[aby]\$[0-9]{2}\$/',$salt)){
-				throw new Exception(sprintf('MyBlowfish: salt must start with phrase '.$type.'DD$ where DD are defined numbers'));
+				throw new Exception(sprintf('MyBlowfish: salt must start with phrase '.$prefix.'DD$ where DD are defined numbers'));
 			}
 			$__salt = $salt;
 		}

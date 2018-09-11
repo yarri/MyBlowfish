@@ -130,21 +130,21 @@ class TcMyBlowfish extends TcBase {
 		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2b$06$LGD1XgDKCWVzEmbfqDCf8eF/XEa5Ky75z.UdfbEitnXjCZnhtQ67X'));
 		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2y$06$nVs2o4LB8O5IuwvWEGJL9u8LnJ5AKzo6zPyKV92lVxTndcgqmgOdX'));
 
-		$hash = MyBlowfish::GetHash("Jupit3R",array("type" => '$2a$'));
+		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => '$2a$'));
 		$this->assertEquals('$2a$06$',substr($hash,0,7));
 
-		$hash = MyBlowfish::GetHash("Jupit3R",array("type" => '$2b$'));
+		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => '$2b$'));
 		$this->assertEquals('$2b$06$',substr($hash,0,7));
 
-		$hash = MyBlowfish::GetHash("Jupit3R",array("type" => '$2y$'));
+		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => '$2y$'));
 		$this->assertEquals('$2y$06$',substr($hash,0,7));
 
 		$exception_thrown = false;
 		try {
-			$hash = MyBlowfish::GetHash("Jupit3R",array("type" => 'bad_joke'));
+			$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => 'bad_joke'));
 		} catch(Exception $e) {
 			//
-			$this->assertEquals("MyBlowfish: invalid hash type: bad_joke",$e->getMessage());
+			$this->assertEquals("MyBlowfish: invalid hash prefix: bad_joke",$e->getMessage());
 			$exception_thrown = true;
 		}
 		$this->assertTrue($exception_thrown);
