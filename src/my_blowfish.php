@@ -13,6 +13,14 @@ if(!defined("MY_BLOWFISH_ROUNDS")){
 	define("MY_BLOWFISH_ROUNDS",12);
 }
 
+if(!defined("MY_BLOWFISH_TYPE")){
+	// Possible types:
+	// $2a$
+	// $2b$
+	// $2y$
+	define("MY_BLOWFISH_TYPE",'$2a$');
+}
+
 /**
  * Provides methods for hashing passwords and comparing hashed passwords.
  * It uses blowfish hash algorithm.
@@ -67,6 +75,7 @@ class MyBlowfish{
 	 *  $hash = MyBlowfish::GetHash("secret");
 	 *  $hash = MyBlowfish::GetHash("secret","SomeSalt");
 	 *  $hash = MyBlowfish::GetHash("secret","$2a$08$GEw8HjtpaK0WfdILVMby7u");
+	 *  $hash = MyBlowfish::GetHash("secret",["type" => '$2y$']);
 	 * </code>
 	 *
 	 * An exception is thrown when something went wrong.
@@ -92,20 +101,26 @@ class MyBlowfish{
     }
 
 		$options += array(
+			"type" => MY_BLOWFISH_TYPE,
 			"salt" => $salt,
 			"escape_non_ascii_chars" => MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS,
 			"rounds" => MY_BLOWFISH_ROUNDS,
 		);
 
+		$type = $options["type"];
 		$password = (string)$password;
 		$salt = (string)$options["salt"];
+
+		if(!in_array($type,array('$2a$','$2b$','$2y$'))){
+			throw new Exception(sprintf("MyBlowfish: invalid hash type: %s",$type));
+		}
 
 		if($options["escape_non_ascii_chars"]){
 			$password = static::EscapeNonAsciiChars($password);
 		}
 
 		// The higher ROUNDS is, the more expensive hash calculation is
-		$__salt = sprintf('$2a$%02d$',$options["rounds"]);
+		$__salt = sprintf($type.'%02d$',$options["rounds"]);
 
 		if(strlen($salt)==0){
 			$__salt .= static::RandomString(22);
@@ -131,8 +146,8 @@ class MyBlowfish{
 			if(strlen($salt)!=29){
 				throw new Exception(sprintf("MyBlowfish: salt must be 29 chars long (it is %s)",strlen($salt)));
 			}
-			if(!preg_match('/^\$2a\$[0-9]{2}\$/',$salt)){
-				throw new Exception(sprintf('MyBlowfish: salt must start with phrase $2a$DD$ where DD are defined numbers'));
+			if(!preg_match('/^\$2[aby]\$[0-9]{2}\$/',$salt)){
+				throw new Exception(sprintf('MyBlowfish: salt must start with phrase '.$type.'DD$ where DD are defined numbers'));
 			}
 			$__salt = $salt;
 		}
@@ -185,7 +200,7 @@ class MyBlowfish{
 	 * Is the given string a valid BLOWFISH hash?
 	 */
 	static function IsHash($value){
-		return strlen($value)==60 && preg_match('/^\$2a\$[0-9]{2}\$/',$value);
+		return strlen($value)==60 && preg_match('/^\$2[aby]\$[0-9]{2}\$/',$value);
 	}
 
 	static function RandomString($length = 22){

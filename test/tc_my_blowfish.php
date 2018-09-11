@@ -105,4 +105,48 @@ class TcMyBlowfish extends TcBase {
 		$salt4 = MyBlowfish::RandomString(3333);
 		$this->assertTrue(!!preg_match('/^[a-zA-Z0-9\/.]{3333}$/',$salt4),$salt4);
 	}
+
+	function test_prefixes(){
+		$hash_a = MyBlowfish::GetHash("daisy",'$2a$06$stW/wJf6Vi/tpZSU8hfaUu');
+		$hash_b = MyBlowfish::GetHash("daisy",'$2b$06$stW/wJf6Vi/tpZSU8hfaUu');
+		$hash_y = MyBlowfish::GetHash("daisy",'$2y$06$stW/wJf6Vi/tpZSU8hfaUu');
+
+		$this->assertEquals('$2a$06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash_a);
+		$this->assertEquals('$2b$06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash_b);
+		$this->assertEquals('$2y$06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash_y);
+
+		$hash_a = MyBlowfish::GetHash("daisy",'$2a$06$');
+		$hash_b = MyBlowfish::GetHash("daisy",'$2b$06$');
+		$hash_c = MyBlowfish::GetHash("daisy",'$2y$06$');
+
+		$this->assertNotEquals(substr($hash_a,3),substr($hash_b,3));
+		$this->assertNotEquals(substr($hash_b,3),substr($hash_c,3));
+
+		$this->assertTrue(MyBlowfish::CheckPassword("daisy",'$2a$06$PaWQ8Ydrq87S8two9Z4LH.0jrJp0aLbo0CRGbVOtGCE3wQVzuV2RG'));
+		$this->assertTrue(MyBlowfish::CheckPassword("daisy",'$2b$06$LGD1XgDKCWVzEmbfqDCf8eF/XEa5Ky75z.UdfbEitnXjCZnhtQ67S'));
+		$this->assertTrue(MyBlowfish::CheckPassword("daisy",'$2y$06$nVs2o4LB8O5IuwvWEGJL9u8LnJ5AKzo6zPyKV92lVxTndcgqmgOdy'));
+
+		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2a$06$PaWQ8Ydrq87S8two9Z4LH.0jrJp0aLbo0CRGbVOtGCE3wQVzuV2RX')); // X on the last position
+		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2b$06$LGD1XgDKCWVzEmbfqDCf8eF/XEa5Ky75z.UdfbEitnXjCZnhtQ67X'));
+		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2y$06$nVs2o4LB8O5IuwvWEGJL9u8LnJ5AKzo6zPyKV92lVxTndcgqmgOdX'));
+
+		$hash = MyBlowfish::GetHash("Jupit3R",array("type" => '$2a$'));
+		$this->assertEquals('$2a$06$',substr($hash,0,7));
+
+		$hash = MyBlowfish::GetHash("Jupit3R",array("type" => '$2b$'));
+		$this->assertEquals('$2b$06$',substr($hash,0,7));
+
+		$hash = MyBlowfish::GetHash("Jupit3R",array("type" => '$2y$'));
+		$this->assertEquals('$2y$06$',substr($hash,0,7));
+
+		$exception_thrown = false;
+		try {
+			$hash = MyBlowfish::GetHash("Jupit3R",array("type" => 'bad_joke'));
+		} catch(Exception $e) {
+			//
+			$this->assertEquals("MyBlowfish: invalid hash type: bad_joke",$e->getMessage());
+			$exception_thrown = true;
+		}
+		$this->assertTrue($exception_thrown);
+	}
 }
