@@ -197,20 +197,23 @@ class MyBlowfish{
     }elseif(function_exists('mcrypt_create_iv')){
 			$bytes = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
 
+		}elseif(function_exists('random_bytes')){
+			// random_bytes() exists in PHP7
+			$bytes = random_bytes($length);
 		}
 
-		if(isset($bytes)){
-			$out = static::_EncodeBytes($bytes);
-			if(strlen($out)==$length){
-				return $out;
+		if(strlen($bytes)!=$length){
+			
+			$bytes = "";
+			while(strlen($bytes)<$length){
+				$bytes .= chr(rand(0,255));
 			}
 		}
 
-		// Beware, String4 provides weak randomness
-		return (string)String4::RandomString($length);
+		return static::_EncodeBytes($bytes,$length);
 	}
 
-  private static function _EncodeBytes($input) {
+  private static function _EncodeBytes($input,$length) {
     // The following code is from the PHP Password Hashing Framework
     $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -220,8 +223,7 @@ class MyBlowfish{
       $char1 = ord($input[$index++]);
       $output .= $itoa64[$char1 >> 2];
       $char1 = ($char1 & 0x03) << 4;
-      if ($index >= 16) {
-        $output .= $itoa64[$char1];
+      if (strlen($output) >= $length) {
         break;
       }
 
@@ -235,6 +237,8 @@ class MyBlowfish{
       $output .= $itoa64[$char1];
       $output .= $itoa64[$char2 & 0x3f];
     } while (1);
+
+		$output = substr($output,0,$length);
 
     return $output;
   }

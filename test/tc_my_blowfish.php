@@ -89,4 +89,20 @@ class TcMyBlowfish extends TcBase {
 		$this->assertEquals('',MyBlowfish::Hash(''));
 		$this->assertEquals(null,MyBlowfish::Hash(null));
 	}
+
+	function test_RandomString(){
+		$salt = MyBlowfish::RandomString();
+		$salt2 = MyBlowfish::RandomString(22);
+
+		$this->assertTrue(!!preg_match('/^[a-zA-Z0-9\/.]{22}$/',$salt),$salt);
+		$this->assertTrue(!!preg_match('/^[a-zA-Z0-9\/.]{22}$/',$salt2),$salt2);
+
+		$this->assertNotEquals($salt,$salt2);
+
+		$salt3 = MyBlowfish::RandomString(30);
+		$this->assertTrue(!!preg_match('/^[a-zA-Z0-9\/.]{30}$/',$salt3),$salt3);
+
+		$salt4 = MyBlowfish::RandomString(3333);
+		$this->assertTrue(!!preg_match('/^[a-zA-Z0-9\/.]{3333}$/',$salt4),$salt4);
+	}
 }
