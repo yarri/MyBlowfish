@@ -107,37 +107,27 @@ class TcMyBlowfish extends TcBase {
 	}
 
 	function test_prefixes(){
-		$hash_a = MyBlowfish::GetHash("daisy",'$2a$06$stW/wJf6Vi/tpZSU8hfaUu');
-		$hash_b = MyBlowfish::GetHash("daisy",'$2b$06$stW/wJf6Vi/tpZSU8hfaUu');
-		$hash_y = MyBlowfish::GetHash("daisy",'$2y$06$stW/wJf6Vi/tpZSU8hfaUu');
+		$this->_test_prefix('$2a$');
+		if(!preg_match('/^5\.3\./',phpversion())){
+			$this->_test_prefix('$2b$'); // In PHP5.3 there is no support for $2b$ blowfish prefix
+		}
+		$this->_test_prefix('$2y$');
+	}
 
-		$this->assertEquals('$2a$06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash_a);
-		$this->assertEquals('$2b$06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash_b);
-		$this->assertEquals('$2y$06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash_y);
+	function _test_prefix($prefix){
+		$hash = MyBlowfish::GetHash("daisy",$prefix.'06$stW/wJf6Vi/tpZSU8hfaUu');
 
-		$hash_a = MyBlowfish::GetHash("daisy",'$2a$06$');
-		$hash_b = MyBlowfish::GetHash("daisy",'$2b$06$');
-		$hash_c = MyBlowfish::GetHash("daisy",'$2y$06$');
+		$this->assertEquals($prefix.'06$stW/wJf6Vi/tpZSU8hfaUunZSV6HfRQQZ1Q6nPKYNuiMnxaJW80OW',$hash);
 
-		$this->assertNotEquals(substr($hash_a,3),substr($hash_b,3));
-		$this->assertNotEquals(substr($hash_b,3),substr($hash_c,3));
+		$hash = MyBlowfish::GetHash("daisy",$prefix.'06$');
+		$this->assertEquals($prefix.'06$',substr($hash,0,7));
 
-		$this->assertTrue(MyBlowfish::CheckPassword("daisy",'$2a$06$PaWQ8Ydrq87S8two9Z4LH.0jrJp0aLbo0CRGbVOtGCE3wQVzuV2RG'));
-		$this->assertTrue(MyBlowfish::CheckPassword("daisy",'$2b$06$LGD1XgDKCWVzEmbfqDCf8eF/XEa5Ky75z.UdfbEitnXjCZnhtQ67S'));
-		$this->assertTrue(MyBlowfish::CheckPassword("daisy",'$2y$06$nVs2o4LB8O5IuwvWEGJL9u8LnJ5AKzo6zPyKV92lVxTndcgqmgOdy'));
+		$this->assertTrue(MyBlowfish::CheckPassword("daisy",$prefix.'06$PaWQ8Ydrq87S8two9Z4LH.0jrJp0aLbo0CRGbVOtGCE3wQVzuV2RG'));
 
-		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2a$06$PaWQ8Ydrq87S8two9Z4LH.0jrJp0aLbo0CRGbVOtGCE3wQVzuV2RX')); // X on the last position
-		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2b$06$LGD1XgDKCWVzEmbfqDCf8eF/XEa5Ky75z.UdfbEitnXjCZnhtQ67X'));
-		$this->assertFalse(MyBlowfish::CheckPassword("daisy",'$2y$06$nVs2o4LB8O5IuwvWEGJL9u8LnJ5AKzo6zPyKV92lVxTndcgqmgOdX'));
+		$this->assertFalse(MyBlowfish::CheckPassword("daisy",$prefix.'06$PaWQ8Ydrq87S8two9Z4LH.0jrJp0aLbo0CRGbVOtGCE3wQVzuV2RX')); // X on the last position
 
-		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => '$2a$'));
-		$this->assertEquals('$2a$06$',substr($hash,0,7));
-
-		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => '$2b$'));
-		$this->assertEquals('$2b$06$',substr($hash,0,7));
-
-		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => '$2y$'));
-		$this->assertEquals('$2y$06$',substr($hash,0,7));
+		$hash = MyBlowfish::GetHash("Jupit3R",array("prefix" => $prefix));
+		$this->assertEquals($prefix.'06$',substr($hash,0,7));
 
 		$exception_thrown = false;
 		try {
