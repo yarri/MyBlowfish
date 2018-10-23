@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.2] 2018-10-23
+
 - Added support for $2b$ and $2y$ hash prefixes
 - Dropped out dependency on atk14/string4 package
 - MyBlowfish::RandomString() fixed & tuned & tested
