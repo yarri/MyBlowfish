@@ -5,7 +5,7 @@ MyBlowfish
 [![Downloads](https://img.shields.io/packagist/dt/yarri/my-blowfish.svg)](https://packagist.org/packages/yarri/my-blowfish)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/510532520a6e4563b61b79a04c3435a4)](https://www.codacy.com/project/jaromir.tomek/MyBlowfish/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yarri/MyBlowfish&amp;utm_campaign=Badge_Grade_Dashboard)
 
-MyBlowfish is a simple PHP class for passwords hashing and checking using Blowfish algorithm.
+MyBlowfish is a simple PHP class for passwords hashing and checking using Blowfish algorithm. It is fully tested in PHP from version 5.3 to 7.2.
 
 It was originally developed for [ATK14 Framework](http://www.atk14.net/). But it can be fit in any other application.
 
@@ -51,9 +51,19 @@ Number of Blowfish rounds can be set by the constant MY_BLOWFISH_ROUNDS.
     // max .. 31
     // optimal .. 10, 11, 12
     // default .. 12
-    define("MY_BLOWFISH_ROUNDS",12);
+    define('MY_BLOWFISH_ROUNDS',12);
 
 Beware that high values of Blowfish rounds may lead to unwanted long time of hash calculation.
+
+Blowfish hash prefixes
+----------------------
+
+Blowfish hashes are prefixed either with $2a$, $2b$ or $2y$. MyBlowfish can handle all of them.
+
+Default prefix can be set by the constant MY_BLOWFISH_PREFIX. By default it is $2a$.
+
+    // default .. '$2a$'
+    define('MY_BLOWFISH_PREFIX','$2b$');
 
 Popular integration into a ATK14 project
 ----------------------------------------
