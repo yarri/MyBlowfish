@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Removed
+- When the second parameter in MyBlowfish::CheckPassword() is not a hash, exception is not thrown - throwing exceptions seemed to be an antipattern
+
 ## [1.2] 2018-10-23
 
 - Added support for $2b$ and $2y$ hash prefixes

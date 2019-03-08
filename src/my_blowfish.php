@@ -183,7 +183,8 @@ class MyBlowfish{
 		);
 
 		if(!static::IsHash($hash)){
-			throw new Exception("MyBlowfish: CheckPassword() expects a hash in the second parameter");
+			return false;
+			//throw new Exception("MyBlowfish: CheckPassword() expects a hash in the second parameter");
 		}
 
 		$exp_h1 = static::GetHash($password,$hash,$options);

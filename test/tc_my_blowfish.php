@@ -30,7 +30,13 @@ class TcMyBlowfish extends TcBase {
 		//
 		$this->assertTrue(MyBlowfish::CheckPassword($hash,$hashed_hash));
 		$this->assertFalse(MyBlowfish::CheckPassword($hashed_hash,$hash));
+		
+		$this->assertFalse(MyBlowfish::CheckPassword("BadTry","BadTry"));
+		$this->assertFalse(MyBlowfish::CheckPassword("",""));
+		$this->assertFalse(MyBlowfish::CheckPassword(null,null));
+		$this->assertFalse(MyBlowfish::CheckPassword("BadTry","Not hash!"));
 
+		/*
 		$exception_thrown = false;
 		try {
 			MyBlowfish::CheckPassword("BadTry","Not hash!");
@@ -40,6 +46,7 @@ class TcMyBlowfish extends TcBase {
 			$this->assertEquals("MyBlowfish: CheckPassword() expects a hash in the second parameter",$e->getMessage());
 		}
 		$this->assertTrue($exception_thrown);
+		*/
 	}
 
 	function test_IsHash(){
