@@ -47,17 +47,17 @@ class MyBlowfish{
 	 * Returns null or empty string if null or empty string is given.
 	 *
 	 * <code>
-	 *    echo MyBlowfish::Hash("daisy"); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
-	 *    echo MyBlowfish::Hash("daisy"); // $2a$06$oU6VBb0Y7/h648HIgDiosukfS0y97pRJOrndqHPunsEZ/2Ykez3Rm
+	 *    echo MyBlowfish::Filter("daisy"); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
+	 *    echo MyBlowfish::Filter("daisy"); // $2a$06$oU6VBb0Y7/h648HIgDiosukfS0y97pRJOrndqHPunsEZ/2Ykez3Rm
 	 *	
-	 *		echo MyBlowfish::Hash('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm'); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
+	 *		echo MyBlowfish::Filter('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm'); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
 	 *
-	 * 		echo MyBlowfish::Hash(""); // ""
-	 * 		echo MyBlowfish::Hash(null); // null
+	 * 		echo MyBlowfish::Filter(""); // ""
+	 * 		echo MyBlowfish::Filter(null); // null
 	 * </code>
 	 *
 	 */
-	static function Hash($password){
+	static function Filter($password){
 		if(strlen($password)==0){
 			return $password;
 		}
@@ -67,6 +67,15 @@ class MyBlowfish{
 		}
 
 		return self::GetHash($password);
+	}
+
+	/**
+	 * Alias for MyBlowfish::Filter()
+	 *
+	 * Hash method has been renamed to Filter and now Hash is alias for Filter to ensure compatibility with old implementations.
+	 */
+	static function Hash($password){
+		return self::Filter($password);
 	}
 
 	/**

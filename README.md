@@ -15,15 +15,15 @@ Basic usage
     $password = "honeyBump";
     MyBlowfish::IsHash($password); // false
 
-    $hash = MyBlowfish::Hash($password);
+    $hash = MyBlowfish::Filter($password);
     MyBlowfish::IsHash($hash); // true
 
-    // A different salt is used automatically in another call of Hash().
+    // A different salt is used automatically in another call of Filter().
     // So the new hash from the same password differs from the old one.
-    $hash2 = MyBlowfish::Hash($password); // $hash2 !== $hash
+    $hash2 = MyBlowfish::Filter($password); // $hash2 !== $hash
 
-    // Hash() doesn't make hash from a hash!
-    $hash3 = MyBlowfish::Hash($hash); // $hash3 === $hash
+    // Filter() doesn't make hash from a hash!
+    $hash3 = MyBlowfish::Filter($hash); // $hash3 === $hash
     
     // There is also method GetHash() which makes hash in every case.
     $hash4 = MyBlowfish::GetHash($hash); // $hash4 !== $hash
@@ -85,7 +85,7 @@ This can be achieved in the model class User.
        */
       static function CreateNewRecord($values,$options = []){
         if(isset($values["password"])){
-          $values["password"] = MyBlowfish::Hash($values["password"]);
+          $values["password"] = MyBlowfish::Filter($values["password"]);
         }
         return parent::CreateNewRecord($values,$options);
       }
@@ -97,7 +97,7 @@ This can be achieved in the model class User.
        */
       function setValues($values,$options = []){
         if(isset($values["password"])){
-          $values["password"] = MyBlowfish::Hash($values["password"]);
+          $values["password"] = MyBlowfish::Filter($values["password"]);
         }
         return parent::setValues($values,$options);
       }
