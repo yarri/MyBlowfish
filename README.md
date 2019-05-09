@@ -5,7 +5,7 @@ MyBlowfish
 [![Downloads](https://img.shields.io/packagist/dt/yarri/my-blowfish.svg)](https://packagist.org/packages/yarri/my-blowfish)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/510532520a6e4563b61b79a04c3435a4)](https://www.codacy.com/project/jaromir.tomek/MyBlowfish/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yarri/MyBlowfish&amp;utm_campaign=Badge_Grade_Dashboard)
 
-MyBlowfish is a simple PHP class for passwords hashing and checking using Blowfish algorithm. It is fully tested in PHP from version 5.3 to 7.2.
+MyBlowfish is a simple PHP class for passwords hashing and checking using Blowfish algorithm. It is fully tested in PHP from version 5.3 to 7.3.
 
 It was originally developed for [ATK14 Framework](http://www.atk14.net/). But it can be fit in any other application.
 
@@ -15,15 +15,15 @@ Basic usage
     $password = "honeyBump";
     MyBlowfish::IsHash($password); // false
 
-    $hash = MyBlowfish::Hash($password);
+    $hash = MyBlowfish::Filter($password);
     MyBlowfish::IsHash($hash); // true
 
-    // A different salt is used automatically in another call of Hash().
+    // A different salt is used automatically in another call of Filter().
     // So the new hash from the same password differs from the old one.
-    $hash2 = MyBlowfish::Hash($password); // $hash2 !== $hash
+    $hash2 = MyBlowfish::Filter($password); // $hash2 !== $hash
 
-    // Hash() doesn't make hash from a hash!
-    $hash3 = MyBlowfish::Hash($hash); // $hash3 === $hash
+    // Filter() doesn't make hash from a hash!
+    $hash3 = MyBlowfish::Filter($hash); // $hash3 === $hash
     
     // There is also method GetHash() which makes hash in every case.
     $hash4 = MyBlowfish::GetHash($hash); // $hash4 !== $hash
@@ -37,8 +37,7 @@ Basic usage
     MyBlowfish::CheckPassword($password,$hash4); // false
     MyBlowfish::CheckPassword($hash,$hash4); // true
 
-    // An exception is thrown when the second parameter in CheckPassword() is not a hash.
-    MyBlowfish::CheckPassword($password,$password); // throws an exception
+    MyBlowfish::CheckPassword($password,$password); // false; 2nd params is not a blowfish hash
 
 Blowfish rounds
 ---------------
@@ -86,7 +85,7 @@ This can be achieved in the model class User.
        */
       static function CreateNewRecord($values,$options = []){
         if(isset($values["password"])){
-          $values["password"] = MyBlowfish::Hash($values["password"]);
+          $values["password"] = MyBlowfish::Filter($values["password"]);
         }
         return parent::CreateNewRecord($values,$options);
       }
@@ -98,7 +97,7 @@ This can be achieved in the model class User.
        */
       function setValues($values,$options = []){
         if(isset($values["password"])){
-          $values["password"] = MyBlowfish::Hash($values["password"]);
+          $values["password"] = MyBlowfish::Filter($values["password"]);
         }
         return parent::setValues($values,$options);
       }

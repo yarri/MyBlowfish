@@ -47,17 +47,17 @@ class MyBlowfish{
 	 * Returns null or empty string if null or empty string is given.
 	 *
 	 * <code>
-	 *    echo MyBlowfish::Hash("daisy"); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
-	 *    echo MyBlowfish::Hash("daisy"); // $2a$06$oU6VBb0Y7/h648HIgDiosukfS0y97pRJOrndqHPunsEZ/2Ykez3Rm
+	 *    echo MyBlowfish::Filter("daisy"); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
+	 *    echo MyBlowfish::Filter("daisy"); // $2a$06$oU6VBb0Y7/h648HIgDiosukfS0y97pRJOrndqHPunsEZ/2Ykez3Rm
 	 *	
-	 *		echo MyBlowfish::Hash('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm'); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
+	 *		echo MyBlowfish::Filter('$2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm'); // $2a$06$tZ5j22vjVOFzYy0oVyUH8O3/wFl9M7HJ8tRopF5HaRMdPStdj3Itm
 	 *
-	 * 		echo MyBlowfish::Hash(""); // ""
-	 * 		echo MyBlowfish::Hash(null); // null
+	 * 		echo MyBlowfish::Filter(""); // ""
+	 * 		echo MyBlowfish::Filter(null); // null
 	 * </code>
 	 *
 	 */
-	static function Hash($password){
+	static function Filter($password){
 		if(strlen($password)==0){
 			return $password;
 		}
@@ -67,6 +67,15 @@ class MyBlowfish{
 		}
 
 		return self::GetHash($password);
+	}
+
+	/**
+	 * Alias for MyBlowfish::Filter()
+	 *
+	 * Hash method has been renamed to Filter and now Hash is alias for Filter to ensure compatibility with old implementations.
+	 */
+	static function Hash($password){
+		return self::Filter($password);
 	}
 
 	/**
@@ -102,7 +111,7 @@ class MyBlowfish{
     }
 
 		$options += array(
-			"prefix" => MY_BLOWFISH_PREFIX,
+			"prefix" => MY_BLOWFISH_PREFIX, // e.g. '$2a$'
 			"salt" => $salt,
 			"escape_non_ascii_chars" => MY_BLOWFISH_ESCAPE_NON_ASCII_CHARS,
 			"rounds" => MY_BLOWFISH_ROUNDS,
@@ -123,41 +132,33 @@ class MyBlowfish{
 		// The higher ROUNDS is, the more expensive hash calculation is
 		$__salt = sprintf($prefix.'%02d$',$options["rounds"]);
 
-		if(strlen($salt)==0){
-			$__salt .= static::RandomString(22);
-		}else{
-			$salt_prefix = $__salt;
-			$salt_random = "";
-			if(preg_match('/^(\$..\$[0-9]+\$)(.*)/',$salt,$matches)){
-				$salt_prefix = $matches[1];
-				$salt_random = $matches[2];
-			}else{
-				$salt_random = $salt;
-			}
-
-			if($salt_random==""){ $salt_random = static::RandomString(22); }
-
-			while(strlen($salt_random)<22){
-				$salt_random .= $salt_random;
-			}
-			$salt_random = substr($salt_random,0,22);
-
-			$salt = "$salt_prefix$salt_random";
-
-			if(strlen($salt)!=29){
-				throw new Exception(sprintf("MyBlowfish: salt must be 29 chars long (it is %s)",strlen($salt)));
-			}
-			if(!preg_match('/^\$2[aby]\$[0-9]{2}\$/',$salt)){
-				throw new Exception(sprintf('MyBlowfish: salt must start with phrase '.$prefix.'DD$ where DD are defined numbers'));
-			}
-			$__salt = $salt;
+		$salt_prefix = $__salt;
+		$salt_random = $salt;
+		if(preg_match('/^(\$..\$[0-9]+\$)(.*)/',$salt,$matches)){
+			$salt_prefix = $matches[1];
+			$salt_random = $matches[2];
 		}
 
-		$__hash = crypt($password,$__salt);
-		if(!self::IsHash($__hash)){
+		if(strlen($salt_random)==0){ $salt_random = static::RandomString(22); }
+
+		$salt_random = str_repeat($salt_random,ceil(22 / strlen($salt_random)));
+		$salt_random = substr($salt_random,0,22);
+
+		$salt = "$salt_prefix$salt_random";
+
+		if(strlen($salt)!=29){
+			throw new Exception(sprintf("MyBlowfish: salt must be 29 chars long (it is %s)",strlen($salt)));
+		}
+		if(!preg_match('/^\$2[aby]\$[0-9]{2}\$/',$salt)){
+			throw new Exception(sprintf('MyBlowfish: salt must start with phrase '.$prefix.'DD$ where DD are defined numbers'));
+		}
+		$__salt = $salt;
+
+		$hash = crypt($password,$__salt);
+		if(!self::IsHash($hash)){
 			throw new Exception("MyBlowfish: hashing failed");
 		}
-		return $__hash;
+		return $hash;
 	}
 
 	/**
