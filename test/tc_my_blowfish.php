@@ -128,6 +128,31 @@ class TcMyBlowfish extends TcBase {
 		$this->_test_prefix('$2y$');
 	}
 
+	function test_rounds(){
+		$hash = MyBlowfish::GetHash("Jupit3R",array("rounds" => 4));
+		$this->assertTrue(MyBlowfish::IsHash($hash));
+
+		$exception_thrown = false;
+		try {
+			$hash = MyBlowfish::GetHash("Jupit3R",array("rounds" => 3));
+		} catch(Exception $e) {
+			//
+			$this->assertEquals("MyBlowfish: rounds out of boundary (rounds must be between 4 and 31 but it is 3)",$e->getMessage());
+			$exception_thrown = true;
+		}
+		$this->assertTrue($exception_thrown);
+
+		$exception_thrown = false;
+		try {
+			$hash = MyBlowfish::GetHash("Jupit3R",array("rounds" => 32));
+		} catch(Exception $e) {
+			//
+			$this->assertEquals("MyBlowfish: rounds out of boundary (rounds must be between 4 and 31 but it is 32)",$e->getMessage());
+			$exception_thrown = true;
+		}
+		$this->assertTrue($exception_thrown);
+	}
+
 	function _test_prefix($prefix){
 		$hash = MyBlowfish::GetHash("daisy",$prefix.'06$stW/wJf6Vi/tpZSU8hfaUu');
 

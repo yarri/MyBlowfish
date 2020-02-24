@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.4] 2019-05-09
+
+- Static method MyBlowfish::Hash() was renamed to MyBlowfish::Filter(); MyBlowfish::Hash() is kept as alias
+
 ## [1.3] 2019-03-08
 
 ### Added
