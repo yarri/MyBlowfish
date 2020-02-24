@@ -120,9 +120,14 @@ class MyBlowfish{
 		$prefix = $options["prefix"];
 		$password = (string)$password;
 		$salt = (string)$options["salt"];
+		$rounds = (int)$options["rounds"];
 
 		if(!in_array($prefix,array('$2a$','$2b$','$2y$'))){
 			throw new Exception(sprintf("MyBlowfish: invalid hash prefix: %s",$prefix));
+		}
+
+		if($rounds<4 || $rounds>31){
+			throw new Exception(sprintf("MyBlowfish: rounds out of boundary (rounds must be between 4 and 31 but it is %d)",$rounds));
 		}
 
 		if($options["escape_non_ascii_chars"]){
@@ -130,7 +135,7 @@ class MyBlowfish{
 		}
 
 		// The higher ROUNDS is, the more expensive hash calculation is
-		$__salt = sprintf($prefix.'%02d$',$options["rounds"]);
+		$__salt = sprintf($prefix.'%02d$',$rounds);
 
 		$salt_prefix = $__salt;
 		$salt_random = $salt;
