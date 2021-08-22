@@ -1,7 +1,7 @@
 MyBlowfish
 ==========
 
-[![Build Status](https://travis-ci.com/yarri/MyBlowfish.svg?branch=master)](https://travis-ci.com/yarri/MyBlowfish)
+[![Build Status](https://travis-ci.com/yarri/MyBlowfish.svg?branch=master)](https://travis-ci.com/github/yarri/MyBlowfish)
 [![Downloads](https://img.shields.io/packagist/dt/yarri/my-blowfish.svg)](https://packagist.org/packages/yarri/my-blowfish)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/510532520a6e4563b61b79a04c3435a4)](https://www.codacy.com/project/jaromir.tomek/MyBlowfish/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yarri/MyBlowfish&amp;utm_campaign=Badge_Grade_Dashboard)
 
