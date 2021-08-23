@@ -107,8 +107,8 @@ class MyBlowfish{
 		}
 
 		if(!defined("CRYPT_BLOWFISH") || CRYPT_BLOWFISH!=1) {
-      throw new Exception("MyBlowfish: Blowfish not supported in this installation. See http://php.net/crypt");
-    }
+			throw new Exception("MyBlowfish: Blowfish not supported in this installation. See http://php.net/crypt");
+		}
 
 		$options += array(
 			"prefix" => MY_BLOWFISH_PREFIX, // e.g. '$2a$'
@@ -214,10 +214,10 @@ class MyBlowfish{
 	static function RandomString($length = 22){
 		$bytes = null;
 
-    if(function_exists('openssl_random_pseudo_bytes')){
-      $bytes = openssl_random_pseudo_bytes($length);
+		if(function_exists('openssl_random_pseudo_bytes')){
+			$bytes = openssl_random_pseudo_bytes($length);
 
-    }elseif(function_exists('mcrypt_create_iv')){
+		}elseif(function_exists('mcrypt_create_iv')){
 			$bytes = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
 
 		}elseif(function_exists('random_bytes')){
@@ -236,35 +236,35 @@ class MyBlowfish{
 		return static::_EncodeBytes($bytes,$length);
 	}
 
-  private static function _EncodeBytes($input,$length) {
-    // The following code is from the PHP Password Hashing Framework
-    $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	private static function _EncodeBytes($input,$length) {
+		// The following code is from the PHP Password Hashing Framework
+		$itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-    $output = '';
-    $index = 0;
-    do {
-      $char1 = ord($input[$index++]);
-      $output .= $itoa64[$char1 >> 2];
-      $char1 = ($char1 & 0x03) << 4;
-      if (strlen($output) >= $length) {
-        break;
-      }
+		$output = '';
+		$index = 0;
+		do {
+			$char1 = ord($input[$index++]);
+			$output .= $itoa64[$char1 >> 2];
+			$char1 = ($char1 & 0x03) << 4;
+			if (strlen($output) >= $length) {
+				break;
+			}
 
-      $char2 = ord($input[$index++]);
-      $char1 |= $char2 >> 4;
-      $output .= $itoa64[$char1];
-      $char1 = ($char2 & 0x0f) << 2;
+			$char2 = ord($input[$index++]);
+			$char1 |= $char2 >> 4;
+			$output .= $itoa64[$char1];
+			$char1 = ($char2 & 0x0f) << 2;
 
-      $char2 = ord($input[$index++]);
-      $char1 |= $char2 >> 6;
-      $output .= $itoa64[$char1];
-      $output .= $itoa64[$char2 & 0x3f];
-    } while (1);
+			$char2 = ord($input[$index++]);
+			$char1 |= $char2 >> 6;
+			$output .= $itoa64[$char1];
+			$output .= $itoa64[$char2 & 0x3f];
+		} while (1);
 
 		$output = substr($output,0,$length);
 
-    return $output;
-  }
+		return $output;
+	}
 
 	/**
 	 * Provides safely encoding non-ascii characters into series of ascii chars
