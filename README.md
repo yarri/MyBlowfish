@@ -131,7 +131,7 @@ Let's test it in the ATK14 console:
 Installation
 ------------
 
-The best way how to install LinkFinder is to use the Composer:
+The best way how to install MyBlowfish is to use the Composer:
 
     composer require yarri/my-blowfish
 
