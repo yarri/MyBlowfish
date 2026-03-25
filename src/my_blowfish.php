@@ -58,7 +58,7 @@ class MyBlowfish{
 	 *
 	 */
 	static function Filter($password){
-		if(strlen($password)==0){
+		if(strlen((string)$password)==0){
 			return $password;
 		}
 
@@ -216,15 +216,16 @@ class MyBlowfish{
 	static function RandomString($length = 22){
 		$bytes = null;
 
-		if(function_exists('openssl_random_pseudo_bytes')){
+		if(function_exists('random_bytes')){
+			// random_bytes() exists in PHP7
+			$bytes = random_bytes($length);
+
+		}elseif(function_exists('openssl_random_pseudo_bytes')){
 			$bytes = openssl_random_pseudo_bytes($length);
 
 		}elseif(function_exists('mcrypt_create_iv')){
 			$bytes = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
 
-		}elseif(function_exists('random_bytes')){
-			// random_bytes() exists in PHP7
-			$bytes = random_bytes($length);
 		}
 
 		if(strlen($bytes)!=$length){
@@ -293,6 +294,6 @@ class MyBlowfish{
 			!static::IsHash($hash2)
 		){ return false; }
 
-		return hash_equals($hash1,$hash2)===0;
+		return hash_equals($hash1,$hash2);
 	}
 }
