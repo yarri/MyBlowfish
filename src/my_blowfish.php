@@ -291,6 +291,6 @@ class MyBlowfish{
 			!static::IsHash($hash2)
 		){ return false; }
 
-		return strcmp($hash1,$hash2)===0;
+		return hash_equals($hash1,$hash2)===0;
 	}
 }
