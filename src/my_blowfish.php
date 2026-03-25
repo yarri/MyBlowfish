@@ -272,6 +272,10 @@ class MyBlowfish{
 	/**
 	 * Provides safely encoding non-ascii characters into series of ascii chars
 	 *
+	 * Intentionally iterates over bytes (not characters) using strlen(),
+	 * so that each byte of a multi-byte UTF-8 character is escaped separately.
+	 * This produces a deterministic ASCII-safe representation.
+	 *
 	 *  $encoded = MyBlowfish::EscapeNonAsciiChars("hřebíček"); // h\xc5\x99eb\xc3\xad\xc4\x8dek
 	 */
 	static function EscapeNonAsciiChars($password){
