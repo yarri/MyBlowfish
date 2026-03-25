@@ -226,11 +226,15 @@ class MyBlowfish{
 
 		}elseif(function_exists('mcrypt_create_iv')){
 			// PHP 5.x fallback (mcrypt removed in PHP 7.2)
-			$bytes = mcrypt_create_iv($length, constant("MCRYPT_DEV_URANDOM));
+			$bytes = mcrypt_create_iv($length, constant("MCRYPT_DEV_URANDOM"));
 
 		}
 
 		if(strlen($bytes)!=$length){
+			trigger_error(
+				"MyBlowfish: No secure random source available, falling back to rand(). Consider upgrading PHP or enabling OpenSSL extension.",
+				E_USER_WARNING
+			);
 			
 			$bytes = "";
 			while(strlen($bytes)<$length){
