@@ -59,9 +59,9 @@ Blowfish hash prefixes
 
 Blowfish hashes are prefixed either with $2a$, $2b$ or $2y$. MyBlowfish can handle all of them.
 
-Default prefix can be set by the constant MY_BLOWFISH_PREFIX. By default it is $2a$.
+Default prefix can be set by the constant MY_BLOWFISH_PREFIX. By default it is $2y$.
 
-    // default .. '$2a$'
+    // default .. '$2y$'
     define('MY_BLOWFISH_PREFIX','$2b$');
 
 Popular integration into a ATK14 project
@@ -120,13 +120,13 @@ Let's test it in the ATK14 console:
 
     php > $user = User::CreateNewRecord(['login' => 'rambo', 'password' => 'secret123']);
     php > echo $user->getPassword();
-    $2a$12$w984Nf6g67ZZKqvXgQWqwuj4mOn9Ptmw.dMNs/A7G9Cj/mt/w5buy
+    $2y$12$w984Nf6g67ZZKqvXgQWqwuj4mOn9Ptmw.dMNs/A7G9Cj/mt/w5buy
     php > $user->setValue('password','newModelArmy');
     php > echo $user->getPassword();
-    $2a$12$2ljCknUGAtf5lSAo0txoFO9qqGH2dxLDr31Ii4VSHca0Zb8cHZZgu
-    php > $user->setValue('password','$2a$12$2ljCknUGAtf5lSAo0txoFO9qqGH2dxLDr31Ii4VSHca0Zb8cHZZgu');
+    $2y$12$2ljCknUGAtf5lSAo0txoFO9qqGH2dxLDr31Ii4VSHca0Zb8cHZZgu
+    php > $user->setValue('password','$2y$12$2ljCknUGAtf5lSAo0txoFO9qqGH2dxLDr31Ii4VSHca0Zb8cHZZgu');
     php > echo $user->getPassword();
-    $2a$12$2ljCknUGAtf5lSAo0txoFO9qqGH2dxLDr31Ii4VSHca0Zb8cHZZgu
+    $2y$12$2ljCknUGAtf5lSAo0txoFO9qqGH2dxLDr31Ii4VSHca0Zb8cHZZgu
 
 Installation
 ------------
