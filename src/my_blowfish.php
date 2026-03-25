@@ -19,7 +19,7 @@ if(!defined("MY_BLOWFISH_PREFIX")){
 	// $2a$
 	// $2b$
 	// $2y$
-	define("MY_BLOWFISH_PREFIX",'$2a$');
+	define("MY_BLOWFISH_PREFIX",'$2y$');
 }
 
 /**
