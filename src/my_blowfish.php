@@ -106,9 +106,12 @@ class MyBlowfish{
 			$salt = "";
 		}
 
+		/*
+		// Starting with PHP 5.3, the CRYPT_BLOWFISH constant always equals to 1
 		if(!defined("CRYPT_BLOWFISH") || CRYPT_BLOWFISH!=1) {
 			throw new Exception("MyBlowfish: Blowfish not supported in this installation. See http://php.net/crypt");
 		}
+		*/
 
 		$options += array(
 			"prefix" => MY_BLOWFISH_PREFIX, // e.g. '$2a$'
@@ -190,7 +193,6 @@ class MyBlowfish{
 
 		if(!static::IsHash($hash)){
 			return false;
-			//throw new Exception("MyBlowfish: CheckPassword() expects a hash in the second parameter");
 		}
 
 		$exp_h1 = static::GetHash($password,$hash,$options);
