@@ -35,9 +35,6 @@ if(!defined("MY_BLOWFISH_PREFIX")){
  *
  * Inspiration:
  *  http://stackoverflow.com/questions/4795385/how-do-you-use-bcrypt-for-hashing-passwords-in-php
- *
- * TODO:
- *  Consider $2x$ and $2y$ hashes
  */
 class MyBlowfish{
 
