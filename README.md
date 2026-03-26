@@ -127,9 +127,9 @@ class User extends ApplicationModel {
   }
 
   /**
-   * Returns user when a correct combination of login and password is given.
+   * Returns user when login and password are correct and user is active and not deleted
    * 
-   * $user = User::Login("rambo","secret123"); // returns user when login and password are correct and user is active and not deleted
+   *    $user = User::Login("rambo","secret123");
    */
   static function Login($login,$password,&$bad_password = false){
     $bad_password = false;
