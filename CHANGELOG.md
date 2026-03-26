@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.4.2] 2026-03-26
+
+* 9294ba6 - [Security] strcmp() -> hash_equals()
+
 ## [1.4.1] 2020-02-24
 
 - An exception is thrown when Blowfish rounds is out of boundary
