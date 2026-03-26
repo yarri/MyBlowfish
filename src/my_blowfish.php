@@ -301,6 +301,12 @@ class MyBlowfish{
 			!static::IsHash($hash2)
 		){ return false; }
 
+		if(!function_exists("hash_equals")){
+			// !! Not safe string comparison
+			return strcmp($hash1,$hash2)===0;
+		}
+
+		// Timing attack safe string comparison
 		return hash_equals($hash1,$hash2);
 	}
 }
