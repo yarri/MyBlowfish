@@ -128,15 +128,23 @@ class User extends ApplicationModel {
 
   /**
    * Returns user when a correct combination of login and password is given.
-   *
-   *    $user = User::Login("rambo", "secret123");
+   * 
+   * $user = User::Login("rambo","secret123"); // returns user when login and password are correct and user is active and not deleted
    */
-  static function Login($login, $password) {
+  static function Login($login,$password,&$bad_password = false){
+    $bad_password = false;
     $user = User::FindByLogin($login);
-    if (!$user) { return; }
-    if (MyBlowfish::CheckPassword($password, $user->getPassword())) {
+    if(!$user){ return; }
+    if($user->isDeleted()){ return; }
+    if(!$user->isActive()){ return; }
+    if($user->isPasswordCorrect($password)){
       return $user;
     }
+    $bad_password = true;
+  }
+
+  function isPasswordCorrect($password){
+    return MyBlowfish::CheckPassword($password,$this->getPassword());
   }
 }
 ```
