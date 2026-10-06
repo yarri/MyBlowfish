@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+* Added `MyBlowfish::NeedsRehash()` to detect hashes that were created with fewer rounds than the currently configured `MY_BLOWFISH_ROUNDS`, or with a different prefix than `MY_BLOWFISH_PREFIX`
+
 ## [1.4.2] 2026-03-26
 
 * 9294ba6 - [Security] strcmp() -> hash_equals()

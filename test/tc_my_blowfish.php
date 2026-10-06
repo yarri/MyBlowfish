@@ -120,6 +120,35 @@ class TcMyBlowfish extends TcBase {
 		$this->assertTrue(!!preg_match('/^[a-zA-Z0-9\/.]{3333}$/',$salt4),$salt4);
 	}
 
+	function test_NeedsRehash(){
+		$hash_06 = MyBlowfish::GetHash("daisy",array("rounds" => 6));
+		$hash_12 = MyBlowfish::GetHash("daisy",array("rounds" => 12));
+
+		$this->assertTrue(MyBlowfish::NeedsRehash($hash_06,array("rounds" => 12)));
+		$this->assertFalse(MyBlowfish::NeedsRehash($hash_12,array("rounds" => 12)));
+		$this->assertFalse(MyBlowfish::NeedsRehash($hash_12,array("rounds" => 6))); // more rounds than required -> no need to rehash
+
+		// defaults to MY_BLOWFISH_ROUNDS (set to 6 in test/initialize.php)
+		$this->assertFalse(MyBlowfish::NeedsRehash($hash_06));
+		$hash_04 = MyBlowfish::GetHash("daisy",array("rounds" => 4));
+		$this->assertTrue(MyBlowfish::NeedsRehash($hash_04));
+
+		$this->assertFalse(MyBlowfish::NeedsRehash("not a hash"));
+		$this->assertFalse(MyBlowfish::NeedsRehash(""));
+		$this->assertFalse(MyBlowfish::NeedsRehash(null));
+
+		// prefix mismatch
+		$hash_2a = MyBlowfish::GetHash("daisy",array("rounds" => 6,"prefix" => '$2a$'));
+		$hash_2y = MyBlowfish::GetHash("daisy",array("rounds" => 6,"prefix" => '$2y$'));
+
+		$this->assertTrue(MyBlowfish::NeedsRehash($hash_2a,array("rounds" => 6,"prefix" => '$2y$')));
+		$this->assertFalse(MyBlowfish::NeedsRehash($hash_2y,array("rounds" => 6,"prefix" => '$2y$')));
+
+		// defaults to MY_BLOWFISH_PREFIX ('$2y$')
+		$this->assertTrue(MyBlowfish::NeedsRehash($hash_2a));
+		$this->assertFalse(MyBlowfish::NeedsRehash($hash_2y));
+	}
+
 	function test_prefixes(){
 		$this->_test_prefix('$2a$');
 		if(!preg_match('/^5\.3\./',phpversion())){

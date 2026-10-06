@@ -73,6 +73,24 @@ define('MY_BLOWFISH_ROUNDS', 12);
 
 Beware that high values of Blowfish rounds may lead to unacceptably long hash calculation times.
 
+Detecting hashes that should be rehashed
+-----------------------------------------
+
+If `MY_BLOWFISH_ROUNDS` is raised later on (e.g. as hardware gets faster), or `MY_BLOWFISH_PREFIX` is changed, existing hashes stored under the older settings won't automatically benefit from the new configuration. `MyBlowfish::NeedsRehash()` tells you when a hash should be recalculated:
+
+```php
+if (MyBlowfish::NeedsRehash($user->getPassword())) {
+  // the plain-text password is only available right after a successful login/CheckPassword() call
+  $user->setValue("password", $plain_password);
+}
+```
+
+It returns `true` when the hash was made with fewer rounds than currently configured, or with a different prefix, and `false` for anything that isn't a valid Blowfish hash. Optional `rounds`/`prefix` options can be passed to check against values other than the current `MY_BLOWFISH_ROUNDS`/`MY_BLOWFISH_PREFIX`:
+
+```php
+MyBlowfish::NeedsRehash($hash, ["rounds" => 14, "prefix" => '$2y$']);
+```
+
 Blowfish hash prefixes
 ----------------------
 

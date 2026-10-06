@@ -210,6 +210,47 @@ class MyBlowfish{
 		return strlen($value)==60 && preg_match('/^\$2[aby]\$[0-9]{2}\$/',$value);
 	}
 
+	/**
+	 * Does the given hash need to be recalculated because it uses fewer rounds, or a different prefix, than currently configured?
+	 *
+	 * Returns false for anything that is not a valid Blowfish hash.
+	 *
+	 *    if(MyBlowfish::NeedsRehash($user->getPassword())){
+	 *      $user->setValue("password",$plain_password); // Filter()/setValues() will compute a fresh hash
+	 *    }
+	 *
+	 * @static
+	 * @access public
+	 * @param string $hash                 existing Blowfish hash
+	 * @param array  $options
+	 *                                     "rounds" => expected number of rounds (defaults to MY_BLOWFISH_ROUNDS)
+	 *                                     "prefix" => expected hash prefix (defaults to MY_BLOWFISH_PREFIX)
+	 * @return boolean                     true -> hash was made with fewer rounds, or a different prefix, than expected and should be rehashed
+	 */
+	static function NeedsRehash($hash,$options = array()){
+		$hash = (string)$hash;
+
+		if(!static::IsHash($hash)){
+			return false;
+		}
+
+		$options += array(
+			"rounds" => MY_BLOWFISH_ROUNDS,
+			"prefix" => MY_BLOWFISH_PREFIX,
+		);
+
+		$rounds = (int)$options["rounds"];
+		$prefix = (string)$options["prefix"];
+
+		preg_match('/^(\$2[aby]\$)([0-9]{2})\$/',$hash,$matches);
+		$hash_prefix = $matches[1];
+		$hash_rounds = (int)$matches[2];
+
+		if($hash_prefix!==$prefix){ return true; }
+
+		return $hash_rounds < $rounds;
+	}
+
 	static function RandomString($length = 22){
 		$bytes = null;
 
