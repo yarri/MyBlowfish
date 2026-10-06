@@ -50,8 +50,15 @@ class TcMyBlowfish extends TcBase {
 	}
 
 	function test_IsHash(){
+		$valid_hash = '$2y$12$MynqSpHoDzQmzFHA5ZcDsesX1pBw9RQzqtJEFqpeZhpawmnC4MUK.';
+
 		$this->assertFalse(MyBlowfish::IsHash("secret"));
-		$this->assertTrue(MyBlowfish::IsHash('$2y$12$MynqSpHoDzQmzFHA5ZcDsesX1pBw9RQzqtJEFqpeZhpawmnC4MUK.'));
+		$this->assertTrue(MyBlowfish::IsHash($valid_hash));
+
+		$this->assertFalse(MyBlowfish::IsHash(substr($valid_hash,0,59))); // too short (59 chars)
+		$this->assertFalse(MyBlowfish::IsHash($valid_hash.".")); // too long (61 chars)
+
+		$this->assertFalse(MyBlowfish::IsHash('$2x$'.substr($valid_hash,4))); // invalid variant letter
 	}
 
 	function test_EscapeNonAsciiChars(){
@@ -79,6 +86,54 @@ class TcMyBlowfish extends TcBase {
 		} catch(Exception $e) {
 			//
 			$exception_thrown = true;
+		}
+		$this->assertTrue($exception_thrown);
+	}
+
+	function test_NonAsciiPassword(){
+		$password = "hřebíček";
+		$salt = '$2y$06$stW/wJf6Vi/tpZSU8hfaUu';
+
+		// same password+salt but escaping on/off must produce different hashes
+		$hash_escaped = MyBlowfish::GetHash($password,$salt,array("escape_non_ascii_chars" => true));
+		$hash_not_escaped = MyBlowfish::GetHash($password,$salt,array("escape_non_ascii_chars" => false));
+		$this->assertNotEquals($hash_escaped,$hash_not_escaped);
+
+		// CheckPassword() must recognize both, regardless of which escaping option is passed to it
+		// (it transparently toggles and retries when the first attempt doesn't match)
+		$this->assertTrue(MyBlowfish::CheckPassword($password,$hash_escaped));
+		$this->assertTrue(MyBlowfish::CheckPassword($password,$hash_not_escaped));
+		$this->assertTrue(MyBlowfish::CheckPassword($password,$hash_escaped,array("escape_non_ascii_chars" => false)));
+		$this->assertTrue(MyBlowfish::CheckPassword($password,$hash_not_escaped,array("escape_non_ascii_chars" => true)));
+
+		$this->assertFalse(MyBlowfish::CheckPassword("hrebicek",$hash_escaped));
+		$this->assertFalse(MyBlowfish::CheckPassword("hrebicek",$hash_not_escaped));
+
+		// end to end through the public Filter()/CheckPassword() API
+		$hash = MyBlowfish::Filter($password);
+		$this->assertTrue(MyBlowfish::IsHash($hash));
+		$this->assertTrue(MyBlowfish::CheckPassword($password,$hash));
+	}
+
+	function test_salt_with_malformed_rounds_digit_count(){
+		// the salt-parsing regex accepts any number of digits for rounds ([0-9]+),
+		// so a non-2-digit rounds segment throws when the final salt isn't exactly 29 chars
+
+		$exception_thrown = false;
+		try {
+			MyBlowfish::GetHash("daisy",'$2a$123$stW/wJf6Vi/tpZSU8hfaUu'); // 3-digit rounds -> 30 chars total
+		} catch(Exception $e) {
+			$exception_thrown = true;
+			$this->assertEquals("MyBlowfish: salt must be 29 chars long (it is 30)",$e->getMessage());
+		}
+		$this->assertTrue($exception_thrown);
+
+		$exception_thrown = false;
+		try {
+			MyBlowfish::GetHash("daisy",'$2a$6$stW/wJf6Vi/tpZSU8hfaUu'); // 1-digit rounds -> 28 chars total
+		} catch(Exception $e) {
+			$exception_thrown = true;
+			$this->assertEquals("MyBlowfish: salt must be 29 chars long (it is 28)",$e->getMessage());
 		}
 		$this->assertTrue($exception_thrown);
 	}
