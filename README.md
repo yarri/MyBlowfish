@@ -13,6 +13,7 @@ It was originally developed for [ATK14 Framework](http://www.atk14.net/), but it
 - [Basic usage](#basic-usage)
 - [Blowfish rounds](#blowfish-rounds)
 - [Blowfish hash prefixes](#blowfish-hash-prefixes)
+- [Detecting hashes that should be rehashed](#detecting-hashes-that-should-be-rehashed)
 - [A popular integration into an ATK14 project](#a-popular-integration-into-an-atk14-project)
 - [Testing](#testing)
 - [License](#license)
@@ -73,6 +74,20 @@ define('MY_BLOWFISH_ROUNDS', 12);
 
 Beware that high values of Blowfish rounds may lead to unacceptably long hash calculation times.
 
+Blowfish hash prefixes
+----------------------
+
+Blowfish hashes are prefixed with either `$2a$`, `$2b$` or `$2y$`. MyBlowfish can handle all of them.
+
+The default prefix is `$2y$`, which is the recommended modern variant — it fixes a bug present in the original `$2a$` implementation.
+
+The default prefix can be changed via the constant `MY_BLOWFISH_PREFIX`:
+
+```php
+// default .. '$2y$'
+define('MY_BLOWFISH_PREFIX', '$2b$');
+```
+
 Detecting hashes that should be rehashed
 -----------------------------------------
 
@@ -89,20 +104,6 @@ It returns `true` when the hash was made with fewer rounds than currently config
 
 ```php
 MyBlowfish::NeedsRehash($hash, ["rounds" => 14, "prefix" => '$2y$']);
-```
-
-Blowfish hash prefixes
-----------------------
-
-Blowfish hashes are prefixed with either `$2a$`, `$2b$` or `$2y$`. MyBlowfish can handle all of them.
-
-The default prefix is `$2y$`, which is the recommended modern variant — it fixes a bug present in the original `$2a$` implementation.
-
-The default prefix can be changed via the constant `MY_BLOWFISH_PREFIX`:
-
-```php
-// default .. '$2y$'
-define('MY_BLOWFISH_PREFIX', '$2b$');
 ```
 
 A popular integration into an ATK14 project
